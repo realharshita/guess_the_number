@@ -5,27 +5,34 @@ class GuessNumberGame:
     def __init__(self, root):
         self.root = root
         self.root.title("Guess the Number Game")
+        self.root.configure(bg='lightblue')  # Background color
 
-        self.label = tk.Label(root, text="Welcome to the Guess the Number Game!")
-        self.label.pack()
+        self.label = tk.Label(root, text="Welcome to the Guess the Number Game!", bg='lightblue', fg='black', font=('Helvetica', 16))
+        self.label.pack(pady=10)
 
-        self.difficulty_label = tk.Label(root, text="Select difficulty level: easy, medium, hard")
+        self.difficulty_label = tk.Label(root, text="Select difficulty level: easy, medium, hard", bg='lightblue', fg='black', font=('Helvetica', 14))
         self.difficulty_label.pack()
 
-        self.difficulty_entry = tk.Entry(root)
-        self.difficulty_entry.pack()
+        self.difficulty_entry = tk.Entry(root, font=('Helvetica', 14))
+        self.difficulty_entry.pack(pady=5)
 
-        self.guess_label = tk.Label(root, text="")
-        self.guess_label.pack()
+        self.start_button = tk.Button(root, text="Start Game", command=self.start_game, bg='green', fg='white', font=('Helvetica', 14))
+        self.start_button.pack(pady=10)
 
-        self.guess_entry = tk.Entry(root)
-        self.guess_entry.pack()
+        self.guess_label = tk.Label(root, text="", bg='lightblue', fg='black', font=('Helvetica', 14))
+        self.guess_label.pack(pady=10)
 
-        self.feedback_label = tk.Label(root, text="")
-        self.feedback_label.pack()
+        self.guess_entry = tk.Entry(root, font=('Helvetica', 14))
+        self.guess_entry.pack(pady=5)
 
-        self.score_label = tk.Label(root, text="")
-        self.score_label.pack()
+        self.submit_button = tk.Button(root, text="Submit Guess", command=self.submit_guess, bg='blue', fg='white', font=('Helvetica', 14))
+        self.submit_button.pack(pady=10)
+
+        self.feedback_label = tk.Label(root, text="", bg='lightblue', fg='black', font=('Helvetica', 14))
+        self.feedback_label.pack(pady=10)
+
+        self.score_label = tk.Label(root, text="", bg='lightblue', fg='black', font=('Helvetica', 14))
+        self.score_label.pack(pady=10)
 
         self.target = None
         self.guess_count = 0
