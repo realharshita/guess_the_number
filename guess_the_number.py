@@ -37,6 +37,9 @@ class GuessNumberGame:
         self.feedback_label = tk.Label(root, text="", bg='lightblue', fg='black', font=('Helvetica', 14), borderwidth=2, relief="groove")
         self.feedback_label.pack(pady=10)
 
+        self.hint_label = tk.Label(root, text="", bg='lightblue', fg='black', font=('Helvetica', 14), borderwidth=2, relief="groove")
+        self.hint_label.pack(pady=10)
+
         self.score_label = tk.Label(root, text="", bg='lightblue', fg='black', font=('Helvetica', 14), borderwidth=2, relief="groove")
         self.score_label.pack(pady=10)
 
@@ -64,8 +67,11 @@ class GuessNumberGame:
                 self.guess_count = 0
                 self.guess_label.config(text="Enter your guess:")
                 self.feedback_label.config(text="")
+                self.hint_label.config(text="")
                 self.score_label.config(text="")
                 self.submit_button.config(state=tk.NORMAL)
+                if difficulty == 'hard':
+                    self.give_hint()
                 self.start_timer()
             else:
                 self.feedback_label.config(text="Invalid difficulty level", bg='red')
@@ -123,6 +129,7 @@ class GuessNumberGame:
         self.guess_count = 0
         self.guess_label.config(text="")
         self.feedback_label.config(text="", bg='lightblue')
+        self.hint_label.config(text="")
         self.score_label.config(text="")
         self.submit_button.config(state=tk.DISABLED)
         self.stop_timer()
@@ -160,6 +167,12 @@ class GuessNumberGame:
     def stop_game(self):
         self.submit_button.config(state=tk.DISABLED)
         self.timer_running = False
+
+    def give_hint(self):
+        if self.target:
+            range_start = (self.target // 100) * 100
+            range_end = range_start + 100
+            self.hint_label.config(text=f"Hint: The number is between {range_start} and {range_end}")
 
 def main():
     root = tk.Tk()
