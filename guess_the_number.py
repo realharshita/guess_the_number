@@ -1,5 +1,7 @@
 import tkinter as tk
+from tkinter import messagebox
 import random
+import pygame
 
 class GuessNumberGame:
     def __init__(self, root):
@@ -7,40 +9,44 @@ class GuessNumberGame:
         self.root.title("Guess the Number Game")
         self.root.configure(bg='lightblue')
 
-        self.label = tk.Label(root, text="Welcome to the Guess the Number Game!", bg='lightblue', fg='black', font=('Helvetica', 16))
+        pygame.mixer.init()
+        self.correct_sound = pygame.mixer.Sound("correct.wav")
+        self.incorrect_sound = pygame.mixer.Sound("incorrect.wav")
+
+        self.label = tk.Label(root, text="Welcome to the Guess the Number Game!", bg='lightblue', fg='black', font=('Helvetica', 16), borderwidth=2, relief="groove")
         self.label.pack(pady=10)
 
-        self.difficulty_label = tk.Label(root, text="Select difficulty level: easy, medium, hard", bg='lightblue', fg='black', font=('Helvetica', 14))
+        self.difficulty_label = tk.Label(root, text="Select difficulty level: easy, medium, hard", bg='lightblue', fg='black', font=('Helvetica', 14), borderwidth=2, relief="groove")
         self.difficulty_label.pack()
 
-        self.difficulty_entry = tk.Entry(root, font=('Helvetica', 14))
+        self.difficulty_entry = tk.Entry(root, font=('Helvetica', 14), borderwidth=2, relief="groove")
         self.difficulty_entry.pack(pady=5)
 
-        self.start_button = tk.Button(root, text="Start Game", command=self.start_game, bg='green', fg='white', font=('Helvetica', 14))
+        self.start_button = tk.Button(root, text="Start Game", command=self.start_game, bg='green', fg='white', font=('Helvetica', 14), borderwidth=2, relief="raised")
         self.start_button.pack(pady=10)
 
-        self.guess_label = tk.Label(root, text="", bg='lightblue', fg='black', font=('Helvetica', 14))
+        self.guess_label = tk.Label(root, text="", bg='lightblue', fg='black', font=('Helvetica', 14), borderwidth=2, relief="groove")
         self.guess_label.pack(pady=10)
 
-        self.guess_entry = tk.Entry(root, font=('Helvetica', 14))
+        self.guess_entry = tk.Entry(root, font=('Helvetica', 14), borderwidth=2, relief="groove")
         self.guess_entry.pack(pady=5)
 
-        self.submit_button = tk.Button(root, text="Submit Guess", command=self.submit_guess, bg='blue', fg='white', font=('Helvetica', 14), state=tk.DISABLED)
+        self.submit_button = tk.Button(root, text="Submit Guess", command=self.submit_guess, bg='blue', fg='white', font=('Helvetica', 14), state=tk.DISABLED, borderwidth=2, relief="raised")
         self.submit_button.pack(pady=10)
 
-        self.feedback_label = tk.Label(root, text="", bg='lightblue', fg='black', font=('Helvetica', 14))
+        self.feedback_label = tk.Label(root, text="", bg='lightblue', fg='black', font=('Helvetica', 14), borderwidth=2, relief="groove")
         self.feedback_label.pack(pady=10)
 
-        self.score_label = tk.Label(root, text="", bg='lightblue', fg='black', font=('Helvetica', 14))
+        self.score_label = tk.Label(root, text="", bg='lightblue', fg='black', font=('Helvetica', 14), borderwidth=2, relief="groove")
         self.score_label.pack(pady=10)
 
-        self.high_score_label = tk.Label(root, text="", bg='lightblue', fg='black', font=('Helvetica', 14))
+        self.high_score_label = tk.Label(root, text="", bg='lightblue', fg='black', font=('Helvetica', 14), borderwidth=2, relief="groove")
         self.high_score_label.pack(pady=10)
 
-        self.timer_label = tk.Label(root, text="", bg='lightblue', fg='black', font=('Helvetica', 14))
+        self.timer_label = tk.Label(root, text="", bg='lightblue', fg='black', font=('Helvetica', 14), borderwidth=2, relief="groove")
         self.timer_label.pack(pady=10)
 
-        self.reset_button = tk.Button(root, text="Reset Game", command=self.reset_game, bg='red', fg='white', font=('Helvetica', 14))
+        self.reset_button = tk.Button(root, text="Reset Game", command=self.reset_game, bg='red', fg='white', font=('Helvetica', 14), borderwidth=2, relief="raised")
         self.reset_button.pack(pady=10)
 
         self.target = None
@@ -62,7 +68,8 @@ class GuessNumberGame:
                 self.submit_button.config(state=tk.NORMAL)
                 self.start_timer()
             else:
-                self.feedback_label.config(text="Invalid difficulty level")
+                self.feedback_label.config(text="Invalid difficulty level", bg='red')
+                self.root.after(2000, lambda: self.feedback_label.config(bg='lightblue'))
 
             self.guess_entry.delete(0, tk.END)
 
@@ -82,15 +89,21 @@ class GuessNumberGame:
             self.provide_feedback(guess)
             self.guess_entry.delete(0, tk.END)
         else:
-            self.feedback_label.config(text="Please enter a valid number.")
+            self.feedback_label.config(text="Please enter a valid number.", bg='red')
+            self.root.after(2000, lambda: self.feedback_label.config(bg='lightblue'))
 
     def provide_feedback(self, guess):
         if guess < self.target:
-            self.feedback_label.config(text="Too low!")
+            self.feedback_label.config(text="Too low!", bg='orange')
+            self.incorrect_sound.play()
+            self.root.after(2000, lambda: self.feedback_label.config(bg='lightblue'))
         elif guess > self.target:
-            self.feedback_label.config(text="Too high!")
+            self.feedback_label.config(text="Too high!", bg='orange')
+            self.incorrect_sound.play()
+            self.root.after(2000, lambda: self.feedback_label.config(bg='lightblue'))
         else:
-            self.feedback_label.config(text="Correct!")
+            self.feedback_label.config(text="Correct!", bg='green')
+            self.correct_sound.play()
             self.display_score()
             self.submit_button.config(state=tk.DISABLED)
             if self.guess_count < self.high_score:
@@ -109,7 +122,7 @@ class GuessNumberGame:
         self.target = None
         self.guess_count = 0
         self.guess_label.config(text="")
-        self.feedback_label.config(text="")
+        self.feedback_label.config(text="", bg='lightblue')
         self.score_label.config(text="")
         self.submit_button.config(state=tk.DISABLED)
         self.stop_timer()
