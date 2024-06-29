@@ -5,7 +5,7 @@ class GuessNumberGame:
     def __init__(self, root):
         self.root = root
         self.root.title("Guess the Number Game")
-        self.root.configure(bg='lightblue')  # Background color
+        self.root.configure(bg='lightblue')
 
         self.label = tk.Label(root, text="Welcome to the Guess the Number Game!", bg='lightblue', fg='black', font=('Helvetica', 16))
         self.label.pack(pady=10)
@@ -25,7 +25,7 @@ class GuessNumberGame:
         self.guess_entry = tk.Entry(root, font=('Helvetica', 14))
         self.guess_entry.pack(pady=5)
 
-        self.submit_button = tk.Button(root, text="Submit Guess", command=self.submit_guess, bg='blue', fg='white', font=('Helvetica', 14))
+        self.submit_button = tk.Button(root, text="Submit Guess", command=self.submit_guess, bg='blue', fg='white', font=('Helvetica', 14), state=tk.DISABLED)
         self.submit_button.pack(pady=10)
 
         self.feedback_label = tk.Label(root, text="", bg='lightblue', fg='black', font=('Helvetica', 14))
@@ -34,16 +34,25 @@ class GuessNumberGame:
         self.score_label = tk.Label(root, text="", bg='lightblue', fg='black', font=('Helvetica', 14))
         self.score_label.pack(pady=10)
 
+        self.reset_button = tk.Button(root, text="Reset Game", command=self.reset_game, bg='red', fg='white', font=('Helvetica', 14))
+        self.reset_button.pack(pady=10)
+
         self.target = None
         self.guess_count = 0
 
     def start_game(self):
         difficulty = self.difficulty_entry.get().lower()
-        self.target = self.generate_random_number(difficulty)
-        self.guess_count = 0
-        self.guess_label.config(text="Enter your guess:")
-        self.feedback_label.config(text="")
-        self.score_label.config(text="")
+        if difficulty in ['easy', 'medium', 'hard']:
+            self.target = self.generate_random_number(difficulty)
+            self.guess_count = 0
+            self.guess_label.config(text="Enter your guess:")
+            self.feedback_label.config(text="")
+            self.score_label.config(text="")
+            self.submit_button.config(state=tk.NORMAL)
+        else:
+            self.feedback_label.config(text="Invalid difficulty level")
+
+        self.guess_entry.delete(0, tk.END)
 
     def generate_random_number(self, difficulty):
         if difficulty == 'easy':
@@ -52,14 +61,16 @@ class GuessNumberGame:
             return random.randint(1, 100)
         elif difficulty == 'hard':
             return random.randint(1, 1000)
-        else:
-            self.feedback_label.config(text="Invalid difficulty level")
-            return None
 
     def submit_guess(self):
-        guess = int(self.guess_entry.get())
-        self.guess_count += 1
-        self.provide_feedback(guess)
+        guess = self.guess_entry.get()
+        if guess.isdigit():
+            guess = int(guess)
+            self.guess_count += 1
+            self.provide_feedback(guess)
+            self.guess_entry.delete(0, tk.END)
+        else:
+            self.feedback_label.config(text="Please enter a valid number.")
 
     def provide_feedback(self, guess):
         if guess < self.target:
@@ -69,10 +80,21 @@ class GuessNumberGame:
         else:
             self.feedback_label.config(text="Correct!")
             self.display_score()
+            self.submit_button.config(state=tk.DISABLED)
 
     def display_score(self):
         score = max(100 - self.guess_count, 0)
         self.score_label.config(text=f"Congratulations! You guessed the number in {self.guess_count} tries.\nYour score: {score}")
+
+    def reset_game(self):
+        self.difficulty_entry.delete(0, tk.END)
+        self.guess_entry.delete(0, tk.END)
+        self.target = None
+        self.guess_count = 0
+        self.guess_label.config(text="")
+        self.feedback_label.config(text="")
+        self.score_label.config(text="")
+        self.submit_button.config(state=tk.DISABLED)
 
 def main():
     root = tk.Tk()
